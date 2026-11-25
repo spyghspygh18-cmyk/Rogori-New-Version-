@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rogori - Juega, Crea y Explora</title>
+    <style>
+        :root {
+            --bg-main: #121215;
+            --bg-nav: #191a1f;
+            --bg-sidebar: #16171c;
+            --bg-card: #1e2026;
+            --bg-card-hover: #272a32;
+            --bg-input: #23252c;
+            --text-primary: #ffffff;
+            --text-secondary: #adb5bd;
+            --text-muted: #72767d;
+            --border-color: #2f3136;
+            --roblox-green: #00b06f;
+            --roblox-green-hover: #00945d;
+            --rogorux-gold: #f5b942;
+            --creator-badge: #00a2ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pantalla de Inicio de Sesión (Overlay) */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0d0e12 0%, #1a1c24 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .tilted-square {
+            width: 34px;
+            height: 34px;
+            border: 6px solid #ffffff;
+            transform: rotate(-14deg);
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .btn-auth-main {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffffff;
+            color: #121215;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: 0.2s;
+        }
+
+        .btn-auth-main:hover {
+            background-color: #e2e6ea;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 16px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        .btn-social {
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            transition: 0.2s;
+        }
+
+        .btn-google {
+            background-color: #ffffff;
+            color: #1f1f1f;
+        }
+
+        .btn-google:hover {
+            background-color: #f1f3f4;
+        }
+
+        .btn-apple {
+            background-color: #000000;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .btn-apple:hover {
+            background-color: #1a1a1a;
+        }
+
+        .creator-hint {
+            margin-top: 18px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(0, 162, 255, 0.1);
+            border: 1px solid rgba(0, 162, 255, 0.3);
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* Barra Superior Estilo Roblox */
+        .topbar {
+            height: 48px;
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .brand .tilted-square {
+            width: 22px;
+            height: 22px;
+            border-width: 4px;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .top-links button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 12px 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .top-links button:hover, .top-links button.active {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 420px;
+            margin: 0 16px;
+        }
+
+        .search-container input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .rogorux-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--bg-input);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--rogorux-gold);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .rogorux-icon {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--rogorux-gold);
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 900;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .avatar-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #00b06f;
+            border: 1px solid #ffffff;
+        }
+
+        .verified-icon {
+            background-color: var(--creator-badge);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+
+        /* Layout Principal con Barra Lateral */
+        .app-layout {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 210px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .side-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .side-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .side-btn:hover, .side-btn.active {
+            background-color: var(--bg-card-hover);
+            color: #ffffff;
+        }
+
+        .side-btn.creator-only {
+            color: #38bdf8;
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            margin-top: 8px;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 24px 32px;
+            max-width: 1300px;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Tarjetas de Juegos Estilo Roblox */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+            gap: 18px;
+        }
+
+        .game-tile {
+            background-color: transparent;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .game-tile:hover {
+            transform: translateY(-3px);
+        }
+
+        .tile-thumb {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .tile-title {
+            font-weight: 700;
+            font-size: 0.98rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tile-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tienda de Rogorux y Catálogo */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .catalog-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .catalog-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .btn-buy {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px;
+            background-color: var(--roblox-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-buy:hover {
+            background-color: var(--roblox-green-hover);
+        }
+
+        /* Panel de Creador / Banco Central de Rogorux */
+        .creator-panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--creator-badge);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .creator-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-control {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-control label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-control input, .form-control select {
+            padding: 10px 12px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        /* Editor de Avatar */
+        .avatar-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            background-color: var(--bg-card);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .avatar-stage {
+            background-color: var(--bg-main);
+            border-radius: 10px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .r-head {
+            width: 58px;
+            height: 58px;
+            background-color: #f5cd30;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            position: relative;
+        }
+
+        .r-hat {
+            position: absolute;
+            top: -22px;
+            font-size: 1.8rem;
+        }
+
+        .r-torso-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .r-arm {
+            width: 28px;
+            height: 82px;
+            background-color: #f5cd30;
+            border-radius: 5px;
+        }
+
+        .r-torso {
+            width: 76px;
+            height: 82px;
+            background-color: #0074bd;
+            border-radius: 5px;
+        }
+
+        .r-legs-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .r-leg {
+            width: 35px;
+            height: 86px;
+            background-color: #a4bd47;
+            border-radius: 5px;
+        }
+
+        .swatch-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            margin-bottom: 18px;
+        }
+
+        .swatch-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .swatch-btn:hover {
+            border-color: #ffffff;
+        }
+
+        /* Modal Detalle de Juego */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            padding: 20px;
+        }
+
+        .modal-bg.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 680px;
+            overflow: hidden;
+        }
+
+        .modal-top {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .game-hero {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hero-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            flex-shrink: 0;
+        }
+
+        .btn-play-roblox {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--roblox-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn-play-roblox:hover {
+            background-color: var(--roblox-green-hover);
+        }
+
+        #minigame-canvas {
+            width: 100%;
+            height: 220px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 16px;
+            position: relative;
+            display: none;
+            overflow: hidden;
+        }
+
+        #rogorux-orb {
+            width: 48px;
+            height: 48px;
+            background-color: var(--rogorux-gold);
+            color: #111;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 0 12px rgba(245, 185, 66, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .avatar-layout { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .game-hero { flex-direction: column; align-items: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Inicio de Sesión -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <span class="tilted-square"></span>
+                <span>ROGORI</span>
+            </div>
+            <p class="auth-subtitle">Inicia sesión para entrar a la plataforma</p>
+
+            <input type="email" id="login-email" class="auth-input" placeholder="Correo electrónico (ej. usuario@gmail.com)">
+            <input type="text" id="login-username" class="auth-input" placeholder="Nombre de usuario en Rogori">
+            <button class="btn-auth-main" onclick="loginWithForm()">Iniciar sesión</button>
+
+            <div class="divider"><span>o continúa con</span></div>
+
+            <button class="btn-social btn-google" onclick="loginProvider('Google')">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/></svg>
+                Iniciar sesión con Google
+            </button>
+
+            <button class="btn-social btn-apple" onclick="loginProvider('Apple')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                Iniciar sesión con Apple
+            </button>
+
+            <div class="creator-hint">
+                👑 Acceso Creador Oficial: Inicia sesión con <strong>spyghspygh18@gmail.com</strong> para administrar el Banco Central de <strong>Rogorux</strong>.
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra Superior -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="brand" onclick="showTab('discover')">
+                <span class="tilted-square"></span>
+                <span>ROGORI</span>
+            </div>
+            <div class="top-links">
+                <button id="top-discover" class="active" onclick="showTab('discover')">Descubrir</button>
+                <button id="top-catalog" onclick="showTab('catalog')">Mercado</button>
+                <button id="top-create" onclick="showTab('create')">Crear</button>
+                <button id="top-rogorux" onclick="showTab('rogorux')">Rogorux</button>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-box" placeholder="Buscar experiencias en Rogori..." onkeyup="searchGames()">
+        </div>
+
+        <div class="topbar-right">
+            <div class="rogorux-pill" onclick="showTab('rogorux')" title="Tu saldo de Rogorux">
+                <span class="rogorux-icon">R</span>
+                <span id="rogorux-balance">100</span>
+            </div>
+            <div class="user-chip">
+                <div class="avatar-circle" id="top-avatar-dot"></div>
+                <span id="display-username">Invitado</span>
+                <span id="creator-tag" class="verified-icon" style="display:none;">✔ CREADOR</span>
+            </div>
+            <button onclick="logout()" style="background:none; border:1px solid #3f424a; color:#adb5bd; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8rem;">Salir</button>
+        </div>
+    </header>
+
+    <!-- Cuerpo de la App -->
+    <div class="app-layout">
+        <!-- Menú Lateral Izquierdo -->
+        <aside class="sidebar">
+            <div class="side-profile">
+                <div class="avatar-circle" id="side-avatar-dot"></div>
+                <div>
+                    <div id="side-username" style="font-weight:700; font-size:0.9rem;">Usuario</div>
+                    <div id="side-email" style="font-size:0.75rem; color:var(--text-muted); max-width:135px; overflow:hidden; text-overflow:ellipsis;">correo@ejemplo.com</div>
+                </div>
+            </div>
+
+            <button class="side-btn active" id="side-discover" onclick="showTab('discover')">🏠 Inicio y Juegos</button>
+            <button class="side-btn" id="side-avatar" onclick="showTab('avatar')">👤 Avatar</button>
+            <button class="side-btn" id="side-catalog" onclick="showTab('catalog')">🛍️ Tienda de Avatar</button>
+            <button class="side-btn" id="side-create" onclick="showTab('create')">🛠️ Rogori Studio</button>
+            <button class="side-btn" id="side-rogorux" onclick="showTab('rogorux')">🪙 Banco Rogorux</button>
+            <button class="side-btn creator-only" id="side-admin" style="display:none;" onclick="showTab('admin')">👑 Panel del Creador</button>
+        </aside>
+
+        <!-- Área Principal -->
+        <main class="content-area">
+            <!-- 1. Descubrir / Juegos -->
+            <section id="tab-discover" class="view-section active">
+                <div class="section-header">
+                    <h2>Experiencias Recomendadas</h2>
+                    <span style="color:var(--text-secondary); font-size:0.9rem;">Plataforma oficial creada por spyghspygh18@gmail.com</span>
+                </div>
+                <div class="games-grid" id="games-container"></div>
+            </section>
+
+            <!-- 2. Avatar -->
+            <section id="tab-avatar" class="view-section">
+                <div class="section-header">
+                    <h2>Editor de Avatar</h2>
+                </div>
+                <div class="avatar-layout">
+                    <div class="avatar-stage">
+                        <div class="r-head" id="av-head">
+                            <span class="r-hat" id="av-hat"></span>
+                            <span>•‿•</span>
+                        </div>
+                        <div class="r-torso-row">
+                            <div class="r-arm" id="av-larm"></div>
+                            <div class="r-torso" id="av-torso"></div>
+                            <div class="r-arm" id="av-rarm"></div>
+                        </div>
+                        <div class="r-legs-row">
+                            <div class="r-leg" id="av-lleg"></div>
+                            <div class="r-leg" id="av-rleg"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>Color de Piel (Cabeza y Brazos)</h4>
+                        <div class="swatch-list" id="swatches-skin"></div>
+
+                        <h4>Color de Camisa / Torso</h4>
+                        <div class="swatch-list" id="swatches-torso"></div>
+
+                        <h4>Color de Pantalón / Piernas</h4>
+                        <div class="swatch-list" id="swatches-legs"></div>
+
+                        <h4>Accesorios Equipados</h4>
+                        <p id="equipped-hat-label" style="color:var(--text-secondary); font-size:0.9rem; margin-top:6px;">Ninguno (compra sombreros en el Mercado con tus Rogorux)</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Mercado / Tienda -->
+            <section id="tab-catalog" class="view-section">
+                <div class="section-header">
+                    <h2>Mercado de Avatar</h2>
+                    <span style="color:var(--rogorux-gold); font-weight:700;">Usa tus Rogorux para equipar accesorios</span>
+                </div>
+                <div class="catalog-grid" id="catalog-container"></div>
+            </section>
+
+            <!-- 4. Crear Experiencia -->
+            <section id="tab-create" class="view-section">
+                <div class="section-header">
+                    <h2>Rogori Studio — Publicar Experiencia</h2>
+                </div>
+                <div class="creator-panel" style="border-color: var(--border-color); max-width: 650px;">
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Título del Juego</label>
+                            <input type="text" id="new-game-name" placeholder="Ej. Escape de la Prisión Obby">
+                        </div>
+                        <div class="form-control">
+                            <label>Género</label>
+                            <select id="new-game-genre">
+                                <option value="Obby">Obby</option>
+                                <option value="Tycoon">Tycoon</option>
+                                <option value="Simulador">Simulador</option>
+                                <option value="Rol">Rol</option>
+                                <option value="Combate">Combate</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-control" style="margin-bottom:16px;">
+                        <label>Ícono de Portada</label>
+                        <select id="new-game-icon">
+                            <option value="🏗️">🏗️ Construcción / Obby</option>
+                            <option value="💰">💰 Fábrica / Tycoon</option>
+                            <option value="⚔️">⚔️ Espadas / PvP</option>
+                            <option value="🏎️">🏎️ Carreras</option>
+                            <option value="🐉">🐉 Fantasía / Dragones</option>
+                        </select>
+                    </div>
+                    <button class="btn-buy" onclick="createNewGame()">Publicar en Rogori</button>
+                </div>
+            </section>
+
+            <!-- 5. Rogorux -->
+            <section id="tab-rogorux" class="view-section">
+                <div class="section-header">
+                    <h2>Rogorux — Moneda Oficial de Rogori</h2>
+                </div>
+                <div class="creator-panel" style="border-color: var(--rogorux-gold);">
+                    <p style="color:var(--text-secondary); margin-bottom:16px;">
+                        <strong>Rogorux</strong> es la moneda oficial creada y emitida por <strong>spyghspygh18@gmail.com</strong>. Puedes obtener Rogorux jugando experiencias en el catálogo o reclamando paquetes promocionales.
+                    </p>
+                    <div class="catalog-grid">
+                        <div class="catalog-card">
+                            <div class="catalog-icon">🪙</div>
+                            <h4>400 Rogorux</h4>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Paquete Inicial</p>
+                            <button class="btn-buy" onclick="claimRogorux(400)">Reclamar Gratis</button>
+                        </div>
+                        <div class="catalog-card">
+                            <div class="catalog-icon">💰</div>
+                            <h4>1,200 Rogorux</h4>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Paquete Constructor</p>
+                            <button class="btn-buy" onclick="claimRogorux(1200)">Reclamar Gratis</button>
+                        </div>
+                        <div class="catalog-card">
+                            <div class="catalog-icon">👑</div>
+                            <h4>5,000 Rogorux</h4>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Bono Rogori VIP</p>
+                            <button class="btn-buy" onclick="claimRogorux(5000)">Reclamar Gratis</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Panel Exclusivo del Creador (spyghspygh18@gmail.com) -->
+            <section id="tab-admin" class="view-section">
+                <div class="section-header">
+                    <h2>👑 Consola del Creador de Rogorux</h2>
+                </div>
+                <div class="creator-panel">
+                    <div class="creator-banner">
+                        <div>
+                            <h3 style="color:#38bdf8;">Propietario Verificado: spyghspygh18@gmail.com</h3>
+                            <p style="color:var(--text-secondary); font-size:0.9rem;">Control maestro de emisión de Rogorux y moderación de experiencias.</p>
+                        </div>
+                        <span class="verified-icon" style="font-size:0.85rem; padding:6px 12px;">OWNER ACTIVO</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Emitir / Acuñar nuevos Rogorux a tu cuenta</label>
+                            <input type="number" id="mint-amount" placeholder="Ej. 100000" value="50000">
+                        </div>
+                        <div class="form-control" style="justify-content:flex-end;">
+                            <button class="btn-buy" style="background-color:#00a2ff;" onclick="mintRogorux()">Emitir Rogorux</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Experiencia (Estilo Página de Juego de Roblox) -->
+    <div class="modal-bg" id="game-modal">
+        <div class="modal-box">
+            <div class="modal-top">
+                <h3 id="modal-game-title">Experiencia</h3>
+                <button onclick="closeGameModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="game-hero">
+                    <div class="hero-icon" id="modal-game-icon">🎮</div>
+                    <div style="flex:1;">
+                        <p id="modal-game-creator" style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:8px;">Por Creador</p>
+                        <p id="modal-game-desc" style="color:var(--text-primary); font-size:0.95rem; margin-bottom:12px;">Descripción del juego.</p>
+                        <div style="display:flex; gap:16px; font-size:0.85rem; color:var(--text-secondary);">
+                            <span>👍 Valoración: <strong id="modal-game-likes">95%</strong></span>
+                            <span>👤 Activos: <strong id="modal-game-players">1,200</strong></span>
+                        </div>
+                        <button class="btn-play-roblox" id="btn-launch-game" onclick="launchMiniGame()">▶ JUGAR</button>
+                    </div>
+                </div>
+
+                <!-- Minijuego para ganar Rogorux dentro de la experiencia -->
+                <div id="minigame-canvas">
+                    <div style="position:absolute; top:10px; left:12px; font-size:0.85rem; color:var(--rogorux-gold); font-weight:700;">
+                        Haz clic en las monedas Rogorux para recolectar (+50 Rogorux por moneda)
+                    </div>
+                    <div id="rogorux-orb" onclick="collectOrb()">R$</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado de la cuenta
+        let currentUser = {
+            email: "",
+            username: "",
+            provider: "",
+            isCreator: false,
+            rogorux: 100
+        };
+
+        const CREATOR_EMAIL = "spyghspygh18@gmail.com";
+
+        // Lista de juegos estilo Roblox
+        const gamesList = [
+            { title: "Brookhaven RP Rogori", author: "Wolfpaq_R", genre: "Rol", likes: "92%", players: "14,200", color: "linear-gradient(135deg, #2563eb, #1d4ed8)", icon: "🏡", desc: "Vive en la ciudad de Rogori, conduce autos y rolea con amigos." },
+            { title: "Tower of Hell Rogori", author: "YXCeptional", genre: "Obby", likes: "89%", players: "8,450", color: "linear-gradient(135deg, #dc2626, #991b1b)", icon: "🗼", desc: "Llega a la cima de la torre generada aleatoriamente sin checkpoints." },
+            { title: "Blox Fruits Rogori", author: "GamerRobot", genre: "Aventura", likes: "96%", players: "21,900", color: "linear-gradient(135deg, #059669, #065f46)", icon: "⚔️", desc: "Entrena para convertirte en el espadachín o usuario de frutas más fuerte." },
+            { title: "Adopt Me! Rogori", author: "DreamCraft", genre: "Rol", likes: "91%", players: "11,300", color: "linear-gradient(135deg, #d97706, #b45309)", icon: "🐶", desc: "Adopta mascotas legendarias, decora tu casa e intercambia con jugadores." },
+            { title: "Murder Mystery 2", author: "Nikilis", genre: "Suspenso", likes: "94%", players: "9,120", color: "linear-gradient(135deg, #4f46e5, #3730a3)", icon: "🔍", desc: "Descubre quién es el impostor o sobrevive como inocente en cada ronda." },
+            { title: "Super Hero Tycoon", author: "spyghspygh18", genre: "Tycoon", likes: "98%", players: "5,600", color: "linear-gradient(135deg, #0284c7, #0369a1)", icon: "🦸", desc: "Construye tu base de superhéroe oficial y gana miles de Rogorux." }
+        ];
+
+        // Artículos de tienda
+        const catalogItems = [
+            { name: "Corona del Creador", price: 500, icon: "👑" },
+            { name: "Dominus Aureus", price: 2500, icon: "🎭" },
+            { name: "Casco Espacial Rogori", price: 300, icon: "🧑‍🚀" },
+            { name: "Gorra Gamer Negra", price: 150, icon: "🧢" },
+            { name: "Sombrero de Mago", price: 450, icon: "🎩" },
+            { name: "Aura de Fuego", price: 1000, icon: "🔥" }
+        ];
+
+        const avatarColors = ["#f5cd30", "#f8d9c6", "#c68642", "#8d5524", "#0074bd", "#00b06f", "#dc2626", "#7c3aed", "#1e2026", "#a4bd47"];
+
+        // Inicio de sesión con formulario
+        function loginWithForm() {
+            const email = document.getElementById("login-email").value.trim().toLowerCase();
+            let username = document.getElementById("login-username").value.trim();
+
+            if (!email) {
+                alert("Por favor escribe un correo electrónico para iniciar sesión.");
+                return;
+            }
+            if (!username) {
+                username = email.split("@")[0];
+            }
+            completeLogin(email, username, "Correo");
+        }
+
+        // Inicio de sesión simulado con Google o Apple
+        function loginProvider(provider) {
+            const promptMsg = `Iniciando sesión con ${provider}.
+Escribe tu correo de ${provider} (usa ${CREATOR_EMAIL} para entrar como Creador):`;
+            const inputEmail = prompt(promptMsg, provider === "Google" ? CREATOR_EMAIL : "jugador@icloud.com");
+            if (!inputEmail) return;
+
+            const cleanEmail = inputEmail.trim().toLowerCase();
+            const username = cleanEmail === CREATOR_EMAIL ? "spyghspygh18" : cleanEmail.split("@")[0];
+            completeLogin(cleanEmail, username, provider);
+        }
+
+        function completeLogin(email, username, provider) {
+            currentUser.email = email;
+            currentUser.username = username;
+            currentUser.provider = provider;
+            currentUser.isCreator = (email === CREATOR_EMAIL);
+
+            if (currentUser.isCreator) {
+                currentUser.rogorux = 999999;
+                document.getElementById("creator-tag").style.display = "inline-block";
+                document.getElementById("side-admin").style.display = "flex";
+            } else {
+                currentUser.rogorux = 250;
+                document.getElementById("creator-tag").style.display = "none";
+                document.getElementById("side-admin").style.display = "none";
+            }
+
+            document.getElementById("display-username").innerText = currentUser.username;
+            document.getElementById("side-username").innerText = currentUser.username;
+            document.getElementById("side-email").innerText = `${currentUser.email} (${provider})`;
+            updateRogoruxUI();
+
+            document.getElementById("auth-screen").style.display = "none";
+        }
+
+        function logout() {
+            document.getElementById("auth-screen").style.display = "flex";
+            showTab("discover");
+        }
+
+        function updateRogoruxUI() {
+            document.getElementById("rogorux-balance").innerText = currentUser.rogorux.toLocaleString();
+        }
+
+        // Navegación por pestañas
+        function showTab(tabName) {
+            document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+            const target = document.getElementById("tab-" + tabName);
+            if (target) target.classList.add("active");
+
+            document.querySelectorAll(".top-links button, .side-btn").forEach(btn => btn.classList.remove("active"));
+            const topBtn = document.getElementById("top-" + tabName);
+            const sideBtn = document.getElementById("side-" + tabName);
+            if (topBtn) topBtn.classList.add("active");
+            if (sideBtn) sideBtn.classList.add("active");
+        }
+
+        // Renderizar Juegos
+        function renderGames(list = gamesList) {
+            const container = document.getElementById("games-container");
+            container.innerHTML = "";
+            list.forEach(game => {
+                const tile = document.createElement("div");
+                tile.className = "game-tile";
+                tile.onclick = () => openGameModal(game);
+                tile.innerHTML = `
+                    <div class="tile-thumb" style="background: ${game.color};">
+                        <span>${game.icon}</span>
+                    </div>
+                    <div class="tile-title">${game.title}</div>
+                    <div class="tile-stats">
+                        <span>👍 ${game.likes}</span>
+                        <span>👤 ${game.players}</span>
+                    </div>
+                `;
+                container.appendChild(tile);
+            });
+        }
+
+        function searchGames() {
+            const q = document.getElementById("search-box").value.toLowerCase();
+            const filtered = gamesList.filter(g => g.title.toLowerCase().includes(q) || g.genre.toLowerCase().includes(q));
+            renderGames(filtered);
+        }
+
+        // Renderizar Mercado
+        function renderCatalog() {
+            const container = document.getElementById("catalog-container");
+            container.innerHTML = "";
+            catalogItems.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "catalog-card";
+                card.innerHTML = `
+                    <div class="catalog-icon">${item.icon}</div>
+                    <h4>${item.name}</h4>
+                    <p style="color:var(--rogorux-gold); font-weight:700; margin-top:6px;">🪙 ${item.price} Rogorux</p>
+                    <button class="btn-buy" onclick="buyCatalogItem('${item.name}', '${item.icon}', ${item.price})">Comprar y Equipar</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function buyCatalogItem(name, icon, price) {
+            if (currentUser.rogorux < price) {
+                alert("No tienes suficientes Rogorux. Juega experiencias o reclama en la pestaña Rogorux.");
+                return;
+            }
+            currentUser.rogorux -= price;
+            updateRogoruxUI();
+            document.getElementById("av-hat").innerText = icon;
+            document.getElementById("equipped-hat-label").innerText = `Equipado: ${icon} ${name}`;
+            alert(`¡Has comprado y equipado "${name}" por ${price} Rogorux!`);
+        }
+
+        // Crear nuevo juego
+        function createNewGame() {
+            const name = document.getElementById("new-game-name").value.trim();
+            const genre = document.getElementById("new-game-genre").value;
+            const icon = document.getElementById("new-game-icon").value;
+
+            if (!name) {
+                alert("Escribe un nombre para tu experiencia.");
+                return;
+            }
+
+            gamesList.unshift({
+                title: name,
+                author: currentUser.username || "Creador",
+                genre: genre,
+                likes: "100%",
+                players: "1",
+                color: "linear-gradient(135deg, #00b06f, #047857)",
+                icon: icon,
+                desc: `Experiencia oficial de género ${genre} creada por ${currentUser.username} en Rogori.`
+            });
+
+            document.getElementById("new-game-name").value = "";
+            renderGames();
+            showTab("discover");
+        }
+
+        // Banco de Rogorux y Consola del Creador
+        function claimRogorux(amount) {
+            currentUser.rogorux += amount;
+            updateRogoruxUI();
+            alert(`Has recibido +${amount} Rogorux emitidos por el sistema de spyghspygh18@gmail.com.`);
+        }
+
+        function mintRogorux() {
+            if (!currentUser.isCreator) {
+                alert("Acceso denegado: Solo spyghspygh18@gmail.com puede emitir nuevos Rogorux.");
+                return;
+            }
+            const amount = parseInt(document.getElementById("mint-amount").value, 10);
+            if (isNaN(amount) || amount <= 0) {
+                alert("Ingresa una cantidad válida.");
+                return;
+            }
+            currentUser.rogorux += amount;
+            updateRogoruxUI();
+            alert(`Se han acuñado ${amount.toLocaleString()} Rogorux en tu cuenta de creador.`);
+        }
+
+        // Modal de Juego y Minijuego
+        function openGameModal(game) {
+            document.getElementById("modal-game-title").innerText = game.title;
+            document.getElementById("modal-game-icon").innerText = game.icon;
+            document.getElementById("modal-game-icon").style.background = game.color;
+            document.getElementById("modal-game-creator").innerText = `Por @${game.author} • Género: ${game.genre}`;
+            document.getElementById("modal-game-desc").innerText = game.desc;
+            document.getElementById("modal-game-likes").innerText = game.likes;
+            document.getElementById("modal-game-players").innerText = game.players;
+            document.getElementById("minigame-canvas").style.display = "none";
+            document.getElementById("game-modal").classList.add("open");
+        }
+
+        function closeGameModal() {
+            document.getElementById("game-modal").classList.remove("open");
+        }
+
+        function launchMiniGame() {
+            const canvas = document.getElementById("minigame-canvas");
+            canvas.style.display = "block";
+            moveOrb();
+        }
+
+        function moveOrb() {
+            const canvas = document.getElementById("minigame-canvas");
+            const orb = document.getElementById("rogorux-orb");
+            const maxX = Math.max(20, canvas.clientWidth - 60);
+            const maxY = Math.max(40, canvas.clientHeight - 60);
+            orb.style.left = Math.floor(Math.random() * maxX) + "px";
+            orb.style.top = Math.max(35, Math.floor(Math.random() * maxY)) + "px";
+        }
+
+        function collectOrb() {
+            currentUser.rogorux += 50;
+            updateRogoruxUI();
+            moveOrb();
+        }
+
+        // Inicializar colores de Avatar
+        function initSwatches() {
+            const fill = (id, fn) => {
+                const el = document.getElementById(id);
+                avatarColors.forEach(c => {
+                    const b = document.createElement("div");
+                    b.className = "swatch-btn";
+                    b.style.backgroundColor = c;
+                    b.onclick = () => fn(c);
+                    el.appendChild(b);
+                });
+            };
+            fill("swatches-skin", c => {
+                document.getElementById("av-head").style.backgroundColor = c;
+                document.getElementById("av-larm").style.backgroundColor = c;
+                document.getElementById("av-rarm").style.backgroundColor = c;
+            });
+            fill("swatches-torso", c => {
+                document.getElementById("av-torso").style.backgroundColor = c;
+                document.getElementById("top-avatar-dot").style.backgroundColor = c;
+                document.getElementById("side-avatar-dot").style.backgroundColor = c;
+            });
+            fill("swatches-legs", c => {
+                document.getElementById("av-lleg").style.backgroundColor = c;
+                document.getElementById("av-rleg").style.backgroundColor = c;
+            });
+        }
+
+        // Arranque inicial
+        renderGames();
+        renderCatalog();
+        initSwatches();
+    </script>
+</body>
+</html>
